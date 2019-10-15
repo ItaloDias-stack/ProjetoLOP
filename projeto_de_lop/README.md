@@ -1,13 +1,10 @@
-# projeto_de_lop
+# Projeto de LOP
 
 A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
+Esse projeto consiste na criação de uma aplicação que faça a chamada de uma sala de aula utilizando o RFID de uma carteirinha de estudante. O funcionamento consiste em uma aplicação android conectada a um servidor web em php para a comunicação com o banco de dados feito em mysql, essa aplicação se comunica atravez do mqtt com uma placa nodemcu esp-32 que recebe essses dados do RFID e envia-os para a aplicação android.
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
