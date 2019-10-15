@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_de_lop/models/Professor.dart';
+import 'package:projeto_de_lop/pages/cadastro.dart';
 
 import 'package:projeto_de_lop/controller/appDB.dart';
-import 'package:projeto_de_lop/inicio.dart';
+import 'package:projeto_de_lop/pages/inicio.dart';
 import 'package:toast/toast.dart';
 
 void main() => runApp(MyApp());
@@ -15,6 +17,8 @@ class MyApp extends StatelessWidget {
         home: LoginPage(title: 'Login'),
         routes: <String, WidgetBuilder>{
           '/inicio': (BuildContext context) => new Inicio(),
+          '/cadastro': (BuildContext context) => new Cadastro(),
+          '/login':(BuildContext context) => new MyApp()
         });
   }
 }
@@ -36,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
     final userField = TextField(
       controller: controllerUser,
       decoration: InputDecoration(
+        prefixIcon: Icon(Icons.account_box),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: 'Usuário',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32)),
@@ -45,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
       controller: controllerPass,
       obscureText: true,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.vpn_key),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: 'Senha',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32))),
@@ -69,17 +75,15 @@ class _LoginPageState extends State<LoginPage> {
       borderRadius: BorderRadius.circular(32),
       color: Color(0xff01A0C7),
       child: MaterialButton(
-          minWidth: MediaQuery.of(context).size.width / 1.75,
+          minWidth: MediaQuery.of(context).size.width / 2.7,
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           onPressed: () async {
-            String mensagem =
-                await login(controllerUser.text, controllerPass.text);
-            print(mensagem);
-            if (mensagem == 'true') {
+            Professor professor = await login(controllerUser.text, controllerPass.text);
+            if (professor.getNome != "") {
               Navigator.pushReplacementNamed(context, '/inicio');
-            }
-            else {
-              Toast.show("Usuário ou senha incorretos", context, duration: Toast.LENGTH_LONG,gravity: Toast.TOP);
+            } else {
+              Toast.show("Usuário ou senha incorretos", context,
+                  duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
             }
           },
           child: Text('Login',
@@ -87,25 +91,50 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(color: Colors.white))),
     );
 
+    final createAccButton = Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(32),
+      child: MaterialButton(
+        minWidth: 100,
+        onPressed: (){
+          Navigator.pushReplacementNamed(context, '/cadastro');
+        },
+        child: Text('Criar Conta', textAlign: TextAlign.center, style: TextStyle(color: Color(0xff01A0C7)),
+      ),
+    ));
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Stack(
           children: <Widget>[
             new Container(
               color: Colors.white,
+              width: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.all(36),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.account_circle, color: Colors.blue, size: 100),
+                    SizedBox(height: 50),
+                    Text(
+                      'Realize o seu login', textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 45),
+                    Icon(Icons.account_circle,
+                        color: Color(0xff01A0C7), size: 100),
                     SizedBox(height: 45),
                     userField,
                     SizedBox(height: 25),
                     passField,
                     SizedBox(height: 35),
-                    loginButton
+                    Wrap(
+                      spacing: 50,
+                      children: <Widget>[
+                        loginButton,createAccButton
+                      ],
+                    ),
                   ],
                 ),
               ),
