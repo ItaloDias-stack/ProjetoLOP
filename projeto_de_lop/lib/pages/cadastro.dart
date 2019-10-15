@@ -53,7 +53,7 @@ class _CadastroState extends State<Cadastro> {
           if(await createAcc(controllerName.text, controllerUser.text, controllerPass.text)){
             Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
           }else{
-            Toast.show("Esse usuário ja existe", context,duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+            Toast.show("Esse usuário já existe", context,duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
             controllerUser.text = "";
             controllerName.text = "";
             controllerPass.text = "";

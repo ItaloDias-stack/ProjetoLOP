@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         routes: <String, WidgetBuilder>{
           '/inicio': (BuildContext context) => new Inicio(),
           '/cadastro': (BuildContext context) => new Cadastro(),
-          '/login':(BuildContext context) => new MyApp()
+          '/login': (BuildContext context) => new MyApp()
         });
   }
 }
@@ -78,9 +78,16 @@ class _LoginPageState extends State<LoginPage> {
           minWidth: MediaQuery.of(context).size.width / 2.7,
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           onPressed: () async {
-            Professor professor = await login(controllerUser.text, controllerPass.text);
+            Professor professor =
+                await login(controllerUser.text, controllerPass.text);
             if (professor.getNome != "") {
-              Navigator.pushReplacementNamed(context, '/inicio');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Inicio(
+                      prof: professor
+                    ),
+                  ));
             } else {
               Toast.show("Usuário ou senha incorretos", context,
                   duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
@@ -92,16 +99,19 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     final createAccButton = Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(32),
-      child: MaterialButton(
-        minWidth: 100,
-        onPressed: (){
-          Navigator.pushReplacementNamed(context, '/cadastro');
-        },
-        child: Text('Criar Conta', textAlign: TextAlign.center, style: TextStyle(color: Color(0xff01A0C7)),
-      ),
-    ));
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        child: MaterialButton(
+          minWidth: 100,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/cadastro');
+          },
+          child: Text(
+            'Criar Conta',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xff01A0C7)),
+          ),
+        ));
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -118,8 +128,10 @@ class _LoginPageState extends State<LoginPage> {
                   children: <Widget>[
                     SizedBox(height: 50),
                     Text(
-                      'Realize o seu login', textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                      'Realize o seu login',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 45),
                     Icon(Icons.account_circle,
@@ -131,9 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 35),
                     Wrap(
                       spacing: 50,
-                      children: <Widget>[
-                        loginButton,createAccButton
-                      ],
+                      children: <Widget>[loginButton, createAccButton],
                     ),
                   ],
                 ),
