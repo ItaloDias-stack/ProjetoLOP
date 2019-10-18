@@ -39,7 +39,7 @@ class _CadastroState extends State<Cadastro> {
           hintText: 'Nome Completo',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32))),
     );
-
+    
     final createButton = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(32),
