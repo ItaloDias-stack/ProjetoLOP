@@ -55,21 +55,6 @@ class _LoginPageState extends State<LoginPage> {
           hintText: 'Senha',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32))),
     );
-
-    /*Future<String> login() async {
-      final response = await http.post("http://192.168.0.18/projeto/login.php",
-          body: {"usuario": controllerUser.text, "senha": controllerPass.text});
-      if (response.body.length>2) {
-        var datauser = json.decode(response.body);
-        print('[INFORMATION] ' + datauser.toString());
-        //Navigator.pushReplacementNamed(context, '/inicio');
-      }else{
-        setState(() {
-            print("Usuário ou senha incorretos");
-          });
-      }
-    }*/
-
     final loginButton = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(32),
@@ -96,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Text('Login',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white))),
-    );
+    ); 
 
     final createAccButton = Material(
         color: Colors.white,

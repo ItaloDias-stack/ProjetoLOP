@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:projeto_de_lop/models/Aluno.dart';
+import 'package:projeto_de_lop/models/Presenca.dart';
 import 'package:projeto_de_lop/models/Professor.dart';
 import 'package:http/http.dart' as http;
 import 'package:projeto_de_lop/models/Turma.dart';
@@ -59,4 +61,38 @@ Future<List<Turma>> listarTurmas(Professor prof)async {
 
   }
   return listTurma;
+}
+
+Future<List<Aluno>> listarPresenca(Presenca presenca) async{
+  final response = await http.post(url+"getPresenca.php", body: {"id_turma": presenca.getIdTurma});
+  var datauser = json.decode(response.body);
+  List<Aluno> listAluno = [];
+  for(var i in datauser){
+    Aluno aluno = new Aluno(i['nome'],i['matricula']);
+    print(datauser);
+    listAluno.add(aluno);
+  }
+  return listAluno;
+}
+
+Future<List<Presenca>> chamadaList(Turma turma)async{
+  final response =
+      await http.post(url + "getListaChamada.php", body: {"id_turma": turma.getIdTurma});
+  var datauser = json.decode(response.body);
+  List<Presenca> listPresenca = [];
+  for (var i in datauser) {
+    Presenca presenca = new Presenca(i["id_chamada"],i["id_turma"],i["dia"],i["id_aluno"]);
+    print(turma);
+    listPresenca.add(presenca);
+
+  }
+  return listPresenca;
+}
+
+Future<Turma> getTurmaById(Presenca presenca) async{
+  final response =
+      await http.post(url + "getTurmaByid.php", body: {"id_turma": presenca.getIdTurma});
+  var datauser = json.decode(response.body);
+  Turma turma = new Turma(datauser["nome_turma"],datauser["cod"],datauser["id_turma"],datauser["id_prof"]);
+  return turma;
 }

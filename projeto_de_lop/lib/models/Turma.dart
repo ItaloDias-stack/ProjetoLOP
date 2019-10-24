@@ -22,6 +22,6 @@ class Turma{
   @override
   String toString() {
     // TODO: implement toString
-    return "Nome da Turma:"+nome_turma+" Codigo: "+cod;
+    return "Nome da Turma:"+nome_turma;
   }
 }
