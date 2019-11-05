@@ -5,9 +5,12 @@ import 'package:projeto_de_lop/models/Presenca.dart';
 import 'package:pdf/widgets.dart' as pdfLib;
 import 'package:projeto_de_lop/models/Turma.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:projeto_de_lop/pages/listaPresenca.dart';
 import 'dart:io';
-
+import 'package:simple_permissions/simple_permissions.dart';
 import 'package:projeto_de_lop/pages/PdfViewerPage.dart';
+import 'package:simple_permissions/simple_permissions.dart' as prefix1;
+import 'package:toast/toast.dart';
 
 class Detalhes extends StatefulWidget {
   final Presenca presenca;
@@ -101,13 +104,27 @@ class _DetalhesState extends State<Detalhes> {
         ]
       )
     );
-    final String dir = (await getApplicationDocumentsDirectory()).path;
-    final String aux = presenca.getDia;
-    final String path  = '$dir/chamada.pdf';
+    //final String dir = (await getExternalStorageDirectory()).path;
+     
+    final String dir = await "storage/emulated/0";
+    final String aux = presenca.getIdChamada;
+    final String path  = '/$dir/chamada_$aux.pdf';
     final File file = File(path);
-    await file.writeAsBytes(pdf.save());
-    Navigator.of(context).push(
+    PermissionStatus permissionResult = await SimplePermissions.requestPermission(Permission.WriteExternalStorage);
+    if(permissionResult == PermissionStatus.authorized){
+      await file.writeAsBytes(pdf.save());
+      Toast.show("PDF gerado", context,
+                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      print("Veja se funfou");
+      Turma turma = await  getTurmaById(presenca);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListaPresenca(turma:turma)));
+    }
+    print(dir);
+    /*Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => PdfViewerPage(path: path))
-    );
+    );*/
   }
+
+
+
 }

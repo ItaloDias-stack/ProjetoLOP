@@ -15,7 +15,7 @@ class Presenca {
     return dia;
   }
 
-  String get getBlob{
+  String get getIdAluno{
     return id_aluno;
   }
 }

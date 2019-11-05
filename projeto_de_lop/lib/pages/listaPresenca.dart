@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_de_lop/controller/appDB.dart';
 import 'package:projeto_de_lop/models/Presenca.dart';
+import 'package:projeto_de_lop/models/Professor.dart';
 import 'package:projeto_de_lop/models/Turma.dart';
 import 'package:projeto_de_lop/pages/detalhes.dart';
+import 'package:projeto_de_lop/pages/inicio.dart';
+
+import 'editarTurma.dart';
 
 class ListaPresenca extends StatefulWidget {
   final Turma turma;
@@ -35,7 +39,12 @@ class _ListaPresencaState extends State<ListaPresenca> {
         borderRadius: BorderRadius.circular(32),
         child: MaterialButton(
           minWidth: 100,
-          onPressed: () {},
+          onPressed: () async {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditarTurma(turma: turma)));
+          },
           child: Text(
             'Editar Turma',
             textAlign: TextAlign.center,
@@ -44,11 +53,11 @@ class _ListaPresencaState extends State<ListaPresenca> {
         ));
 
     return Scaffold(
-      body: Container(
+        body: Container(
       child: Column(
         children: <Widget>[
           SizedBox(height: 35),
-          Text("Turma de "+turma.getNomeTurma,
+          Text("Turma de " + turma.getNomeTurma,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Expanded(
             child: SizedBox(
@@ -68,7 +77,7 @@ class _ListaPresencaState extends State<ListaPresenca> {
                       itemBuilder: (BuildContext context, int i) {
                         return ListTile(
                             title: Text(snapshot.data[i].dia),
-                            onTap: () async{
+                            onTap: () async {
                               Presenca presenca = new Presenca(
                                   snapshot.data[i].id_chamada,
                                   snapshot.data[i].id_turma,
@@ -78,7 +87,7 @@ class _ListaPresencaState extends State<ListaPresenca> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          Detalhes(presenca:presenca)));
+                                          Detalhes(presenca: presenca)));
                             },
                             leading: CircleAvatar(
                               backgroundColor: Color(0xff01A0C7),
@@ -96,9 +105,7 @@ class _ListaPresencaState extends State<ListaPresenca> {
             margin: const EdgeInsets.only(bottom: 30),
             child: Wrap(
               spacing: 50,
-              children: <Widget>[
-                deleteTurma,editTurma
-              ],
+              children: <Widget>[deleteTurma, editTurma],
             ),
           ),
         ],

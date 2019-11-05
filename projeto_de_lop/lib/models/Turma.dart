@@ -1,5 +1,6 @@
 class Turma{
-  final String nome_turma,cod,id_turma,id_prof;
+  final String nome_turma,cod;
+  final String id_turma,id_prof;
 
   Turma(this.nome_turma,this.cod,this.id_turma,this.id_prof);
 

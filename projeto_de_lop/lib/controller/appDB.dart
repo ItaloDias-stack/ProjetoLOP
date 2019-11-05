@@ -49,50 +49,72 @@ Future<bool> createTurma(String cod, String nome_turma, Professor prof) async {
   }
 }
 
-Future<List<Turma>> listarTurmas(Professor prof)async {
+Future<List<Turma>> listarTurmas(Professor prof) async {
   final response =
       await http.post(url + "getTurma.php", body: {"id_prof": prof.getId});
   var datauser = json.decode(response.body);
   List<Turma> listTurma = [];
   for (var i in datauser) {
-    Turma turma = new Turma(i["nome_turma"],i["cod"],i["id_turma"],i["id_prof"]);
+    Turma turma =
+        new Turma(i["nome_turma"], i["cod"], i["id_turma"], i["id_prof"]);
     print(turma);
     listTurma.add(turma);
-
   }
   return listTurma;
 }
 
-Future<List<Aluno>> listarPresenca(Presenca presenca) async{
-  final response = await http.post(url+"getPresenca.php", body: {"id_turma": presenca.getIdTurma});
+Future<List<Aluno>> listarPresenca(Presenca presenca) async {
+  final response = await http
+      .post(url + "getPresenca.php", body: {"id_turma": presenca.getIdTurma});
   var datauser = json.decode(response.body);
   List<Aluno> listAluno = [];
-  for(var i in datauser){
-    Aluno aluno = new Aluno(i['nome'],i['matricula']);
+  for (var i in datauser) {
+    Aluno aluno = new Aluno(i['nome'], i['matricula']);
     print(datauser);
     listAluno.add(aluno);
   }
   return listAluno;
 }
 
-Future<List<Presenca>> chamadaList(Turma turma)async{
-  final response =
-      await http.post(url + "getListaChamada.php", body: {"id_turma": turma.getIdTurma});
+Future<List<Presenca>> chamadaList(Turma turma) async {
+  final response = await http
+      .post(url + "getListaChamada.php", body: {"id_turma": turma.getIdTurma});
   var datauser = json.decode(response.body);
   List<Presenca> listPresenca = [];
   for (var i in datauser) {
-    Presenca presenca = new Presenca(i["id_chamada"],i["id_turma"],i["dia"],i["id_aluno"]);
+    Presenca presenca =
+        new Presenca(i["id_chamada"], i["id_turma"], i["dia"], i["id_aluno"]);
     print(turma);
     listPresenca.add(presenca);
-
   }
   return listPresenca;
 }
 
-Future<Turma> getTurmaById(Presenca presenca) async{
-  final response =
-      await http.post(url + "getTurmaByid.php", body: {"id_turma": presenca.getIdTurma});
+Future<Turma> getTurmaById(Presenca presenca) async {
+  final response = await http
+      .post(url + "getTurmaById.php", body: {"id_turma": presenca.getIdTurma});
   var datauser = json.decode(response.body);
-  Turma turma = new Turma(datauser["nome_turma"],datauser["cod"],datauser["id_turma"],datauser["id_prof"]);
+  print(datauser);
+  Turma turma = new Turma(datauser["nome_turma"] + "", datauser["cod"] + "",
+      datauser["id_turma"] + "", datauser["id_prof"] + "");
   return turma;
+}
+
+Future<bool> updateTurma(String nome,String cod,String id_turma) async {
+  final response = await http.post(url + "updateTurma.php",
+      body: {"id_turma":id_turma, "nome_turma": nome,"cod":cod});
+  var datauser = json.decode(response.body);
+  print(datauser);
+  if(datauser["message"] == "true"){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+Future <Professor> getProfessorById(Turma turma) async{
+  final response = await http.post(url+"getProfessorById.php",body: {"id_prof":turma.id_prof});
+  var datauser = json.decode(response.body);
+  Professor professor = new Professor(datauser["nome"], datauser["usuario"], datauser["senha"], datauser["id_prof"]);
+  return professor;
 }
