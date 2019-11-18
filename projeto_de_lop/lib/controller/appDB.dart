@@ -5,7 +5,8 @@ import 'package:projeto_de_lop/models/Professor.dart';
 import 'package:http/http.dart' as http;
 import 'package:projeto_de_lop/models/Turma.dart';
 
-String url = "http://192.168.0.18/projeto/";
+String url =
+    "http://192.168.0.18/projeto/"; // Lembrar de trocar o ip para o la de casa dps
 Professor professor = new Professor("", "", "", "");
 Future<Professor> login(String usuario, String senha) async {
   final response = await http
@@ -69,7 +70,7 @@ Future<List<Aluno>> listarPresenca(Presenca presenca) async {
   var datauser = json.decode(response.body);
   List<Aluno> listAluno = [];
   for (var i in datauser) {
-    Aluno aluno = new Aluno(i['nome'], i['matricula']);
+    Aluno aluno = new Aluno(i['nome'], i['matricula'], i['codigo'], i['id']);
     print(datauser);
     listAluno.add(aluno);
   }
@@ -100,21 +101,77 @@ Future<Turma> getTurmaById(Presenca presenca) async {
   return turma;
 }
 
-Future<bool> updateTurma(String nome,String cod,String id_turma) async {
+Future<bool> updateTurma(String nome, String cod, String id_turma) async {
   final response = await http.post(url + "updateTurma.php",
-      body: {"id_turma":id_turma, "nome_turma": nome,"cod":cod});
+      body: {"id_turma": id_turma, "nome_turma": nome, "cod": cod});
   var datauser = json.decode(response.body);
   print(datauser);
-  if(datauser["message"] == "true"){
+  if (datauser["message"] == "true") {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
 
-Future <Professor> getProfessorById(Turma turma) async{
-  final response = await http.post(url+"getProfessorById.php",body: {"id_prof":turma.id_prof});
+Future<Professor> getProfessorById(Turma turma) async {
+  final response = await http
+      .post(url + "getProfessorById.php", body: {"id_prof": turma.id_prof});
   var datauser = json.decode(response.body);
-  Professor professor = new Professor(datauser["nome"], datauser["usuario"], datauser["senha"], datauser["id_prof"]);
+  Professor professor = new Professor(datauser["nome"], datauser["usuario"],
+      datauser["senha"], datauser["id_prof"]);
   return professor;
+}
+
+Future<bool> inserirAlunos(Aluno aluno, Turma turma) async {
+  final response = await http.post(url + "addAluno.php", body: {
+    "nome": aluno.getNome,
+    "matricula": aluno.getMatricula,
+    "codigo": aluno.getCodigo
+  });
+
+  var datauser = json.decode(response.body);
+  print(datauser["message"].toString());
+  if (datauser["message"] == "true") {
+    inserirAlunoTurma(await getAluno(aluno), turma);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+Future<Aluno> getAluno(Aluno aluno) async {
+  final response = await http.post(url + "getAlunoByNome.php",
+      body: {"nome": aluno.getNome, "matricula": aluno.getMatricula});
+  var i = json.decode(response.body);
+  aluno = new Aluno(i['nome'], i['matricula'], i['codigo'], i['id']);
+  return aluno;
+}
+
+Future<bool> inserirAlunoTurma(Aluno aluno, Turma turma) async {
+  final response = await http.post(url + "addAlunoTurma.php",
+      body: {"id_aluno": aluno.getId, "id_turma": turma.getIdTurma});
+
+  var datauser = json.decode(response.body);
+  print(datauser["message"].toString());
+  if (datauser["message"] == "true") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void deleteTurma(Turma turma) async {
+  final response = await http
+      .post(url + "getAlunoById.php", body: {"id_turma": turma.getIdTurma});
+  var r = json.decode(response.body);
+  print("Id: " + turma.getIdTurma);
+  print(r.toString());
+  if (response.body.length > 2) {
+    Aluno aluno = new Aluno(r['nome'], r['matricula'], r['codigo'], r['id']);
+    final response2 = await http.post(url + "deleteTurma.php",
+        body: {"id_turma": turma.getIdTurma, "id_aluno": aluno.getId});
+  } else {
+    final response3 = await http.post(url + "deleteTurmaSemAluno.php",
+        body: {"id_turma": turma.getIdTurma});
+  }
 }

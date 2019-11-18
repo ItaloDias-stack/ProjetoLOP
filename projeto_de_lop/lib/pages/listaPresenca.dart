@@ -6,6 +6,7 @@ import 'package:projeto_de_lop/models/Turma.dart';
 import 'package:projeto_de_lop/pages/detalhes.dart';
 import 'package:projeto_de_lop/pages/inicio.dart';
 
+import 'adicionarAluno.dart';
 import 'editarTurma.dart';
 
 class ListaPresenca extends StatefulWidget {
@@ -20,19 +21,46 @@ class _ListaPresencaState extends State<ListaPresenca> {
   _ListaPresencaState({this.turma});
   @override
   Widget build(BuildContext context) {
-    final deleteTurma = Material(
+    final menu = Container(
+        margin: EdgeInsets.only(top: 10),
+        child: PopupMenuButton<int>(
+          itemBuilder: (context) => [
+            PopupMenuItem(
+                value: 1,
+                child: MaterialButton(
+                  minWidth: 100,
+                  padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder:(context) => CadastrarAluno(turma: turma)));
+                  },
+                  child: Text('Adicionar Alunos', textAlign: TextAlign.center),
+                )),
+          ],
+          icon: Icon(Icons.library_add),
+          offset: Offset(0, 100),
+        ));
+
+    final deleteTurmaB = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(32),
       color: Colors.deepOrangeAccent,
       child: MaterialButton(
         minWidth: 100,
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        onPressed: () {},
+        onPressed: () async{
+          Professor professor =  await getProfessorById(turma);
+          await deleteTurma(turma);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Inicio(prof: professor)));
+        },
         child: Text('Deletar Truma',
             textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
       ),
     );
-
+    final texto = Container(
+      margin: EdgeInsets.only(top: 25),
+      child: Text("Turma de " + turma.getNomeTurma,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+    );
     final editTurma = Material(
         elevation: 5,
         color: Color(0xff01A0C7),
@@ -57,8 +85,11 @@ class _ListaPresencaState extends State<ListaPresenca> {
       child: Column(
         children: <Widget>[
           SizedBox(height: 35),
-          Text("Turma de " + turma.getNomeTurma,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          new Container(
+              child: Wrap(
+            spacing: 50,
+            children: <Widget>[texto, menu],
+          )),
           Expanded(
             child: SizedBox(
               height: 50,
@@ -105,7 +136,7 @@ class _ListaPresencaState extends State<ListaPresenca> {
             margin: const EdgeInsets.only(bottom: 30),
             child: Wrap(
               spacing: 50,
-              children: <Widget>[deleteTurma, editTurma],
+              children: <Widget>[deleteTurmaB, editTurma],
             ),
           ),
         ],
