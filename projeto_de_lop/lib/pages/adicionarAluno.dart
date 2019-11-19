@@ -18,6 +18,8 @@ class CadastrarAluno extends StatefulWidget {
 }
 
 class _CadastrarAlunoState extends State<CadastrarAluno> {
+  final TextEditingController controllerNome = new TextEditingController();
+  final TextEditingController controllerMatricula = new TextEditingController();
   Turma turma;
   _CadastrarAlunoState({this.turma});
   String _temp = " ";
@@ -30,12 +32,14 @@ class _CadastrarAlunoState extends State<CadastrarAluno> {
   void connect() async {
     client = MqttClient('tailor.cloudmqtt.com', '');
     client.port = port;
-    client.keepAlivePeriod = 100000;
+    client.keepAlivePeriod = 60;
     client.logging(on: false);
     client.onConnected = onConnected;
     client.onDisconnected = onDisconnected;
     client.onSubscribed = onSubscribed;
     client.pongCallback = pong;
+
+    
 
     final MqttConnectMessage connMess = MqttConnectMessage()
         .withClientIdentifier('Mqtt_MyClientUniqueId')
@@ -81,7 +85,12 @@ class _CadastrarAlunoState extends State<CadastrarAluno> {
 
     setState(() {
       _temp = message;
+      controllerNome.text=controllerNome.text;
+      controllerMatricula.text=controllerMatricula.text;
     });
+      
+
+    
   }
 
   void onSubscribed(String topic) {
@@ -111,8 +120,7 @@ class _CadastrarAlunoState extends State<CadastrarAluno> {
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 15, color: Colors.blueGrey[300]));
 
-    final TextEditingController controllerNome = new TextEditingController();
-    final TextEditingController controllerMatricula = new TextEditingController();
+    
 
     final nomeField = TextField(
       controller: controllerNome,
@@ -124,6 +132,13 @@ class _CadastrarAlunoState extends State<CadastrarAluno> {
       ),
     );
 
+    final getConnection = FloatingActionButton(
+      backgroundColor: Colors.blueAccent[300],
+      child: Icon(Icons.play_arrow),
+      onPressed: () {
+        connect();
+      },
+    );
     final salvar = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(32),
@@ -132,18 +147,35 @@ class _CadastrarAlunoState extends State<CadastrarAluno> {
           minWidth: 100,
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           onPressed: () async {
-            if (_temp == " ") {
+            if (_temp == "") {
               Toast.show("Aguarde a carteirinha para salvar os alunos", context,
-                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                  duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
             } else {
-              Aluno aluno = new Aluno(
-                  controllerNome.text, controllerMatricula.text, _temp, '');
-              if (await inserirAlunos(aluno, turma)) {
-                Toast.show("Aluno inserido com sucesso", context,
-                    duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-                controllerMatricula.text = "";
-                controllerNome.text = "";
-                _temp = " ";
+              if (controllerNome.text == "" || controllerMatricula == "") {
+                Toast.show("Insira os dados do aluno", context,
+                    duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+              } else {
+                Aluno aluno = new Aluno(
+                    controllerNome.text, controllerMatricula.text, _temp, '');
+                if (await inserirAlunos(aluno, turma)) {
+                  Toast.show("Aluno inserido com sucesso", context,
+                      duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+                  
+                  setState(() {
+                    controllerMatricula.text = "";
+                    controllerNome.text = "";
+                     _temp = "";
+                  });
+                  
+                }else{
+                  Toast.show("Esse aluno já está cadastrado na turma", context,
+                      duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
+                  setState(() {
+                    controllerMatricula.text = "";
+                    controllerNome.text = "";
+                     _temp = "";
+                  });   
+                }
               }
             }
           },
@@ -154,20 +186,12 @@ class _CadastrarAlunoState extends State<CadastrarAluno> {
 
     final matField = TextField(
       controller: controllerMatricula,
-      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.assignment_ind),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: 'Matrícula do Aluno',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32)),
       ),
-    );
-    final getButton = FloatingActionButton(
-      backgroundColor: Colors.blueAccent[300],
-      child: Icon(Icons.play_arrow),
-      onPressed: () {
-        connect();
-      },
     );
     return Scaffold(
       body: SingleChildScrollView(
@@ -200,7 +224,7 @@ class _CadastrarAlunoState extends State<CadastrarAluno> {
                         margin: const EdgeInsets.only(bottom: 30),
                         child: Wrap(
                           spacing: 50,
-                          children: <Widget>[salvar,getButton],
+                          children: <Widget>[salvar,getConnection],
                         ))
                   ],
                 ),

@@ -125,49 +125,44 @@ Future<Professor> getProfessorById(Turma turma) async {
 Future<bool> inserirAlunos(Aluno aluno, Turma turma) async {
   final response = await http.post(url + "addAluno.php", body: {
     "nome": aluno.getNome,
-    "matricula": aluno.getMatricula,
-    "codigo": aluno.getCodigo
+    "codigo": aluno.getCodigo,
+    "matricula": aluno.getMatricula
   });
-
-  var datauser = json.decode(response.body);
-  print(datauser["message"].toString());
-  if (datauser["message"] == "true") {
-    inserirAlunoTurma(await getAluno(aluno), turma);
+  print(response.body);
+  var i = json.decode(response.body);
+  if(i["message"] == "true"){
+    print('entrei');
+    await inserirAlunoTurma(await getAluno(aluno.getNome,aluno.getMatricula), turma);
     return true;
-  } else {
+  }else{
     return false;
   }
 }
 
-Future<Aluno> getAluno(Aluno aluno) async {
+Future<Aluno> getAluno(String nome,String matricula) async {
   final response = await http.post(url + "getAlunoByNome.php",
-      body: {"nome": aluno.getNome, "matricula": aluno.getMatricula});
+      body: {"nome": nome, "matricula": matricula});
   var i = json.decode(response.body);
-  aluno = new Aluno(i['nome'], i['matricula'], i['codigo'], i['id']);
-  return aluno;
+  print(response.body);
+  Aluno aluno2 = new Aluno(i['nome'], i['matricula'], i['codigo'], i['id_aluno']);
+  print("Aluno id: "+aluno2.getId);
+  return aluno2;
 }
 
-Future<bool> inserirAlunoTurma(Aluno aluno, Turma turma) async {
+void inserirAlunoTurma(Aluno aluno, Turma turma) async {
+  print("Id aluno: "+aluno.getId+",id turma: "+turma.getIdTurma);
   final response = await http.post(url + "addAlunoTurma.php",
       body: {"id_aluno": aluno.getId, "id_turma": turma.getIdTurma});
-
-  var datauser = json.decode(response.body);
-  print(datauser["message"].toString());
-  if (datauser["message"] == "true") {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 void deleteTurma(Turma turma) async {
   final response = await http
       .post(url + "getAlunoById.php", body: {"id_turma": turma.getIdTurma});
   var r = json.decode(response.body);
-  print("Id: " + turma.getIdTurma);
+  print("Tamanho: "+response.body.length.toString());
   print(r.toString());
   if (response.body.length > 2) {
-    Aluno aluno = new Aluno(r['nome'], r['matricula'], r['codigo'], r['id']);
+    Aluno aluno = new Aluno(r['nome'], r['matricula'], r['codigo'], r['id_aluno']);
     final response2 = await http.post(url + "deleteTurma.php",
         body: {"id_turma": turma.getIdTurma, "id_aluno": aluno.getId});
   } else {
